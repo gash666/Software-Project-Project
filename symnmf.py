@@ -13,7 +13,7 @@ def generate_initial_H(W, k):
     for row in W:
         for value in row:
             m += value
-    value /= n * n
+    m /= n * k
 
     H = []
 
@@ -42,7 +42,7 @@ def proccess_input_file(file_name):
     for line in lines:
         row = [float(value) for value in line.split(",")]
         
-        if row(len) == 0:
+        if len(row) == 0:
             break
         
         X.append(row)
@@ -72,7 +72,7 @@ def main():
         H = generate_initial_H(W, k)
         result = symnmf_c.symnmf(H, W)
     elif goal == "sym":
-        result = symnmf_.sym(X)
+        result = symnmf_c.sym(X)
     elif goal == "ddg":
         result = symnmf_c.ddg(X)
     elif goal == "norm":
