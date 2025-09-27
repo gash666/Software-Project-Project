@@ -608,33 +608,33 @@ def test_with_valgrind():
 
 
 if __name__ == "__main__":
-    # print("--------")
-    # print("Testing programs")
-    # print("--------")
-    # test_programs()
+    print("--------")
+    print("Testing programs")
+    print("--------")
+    test_programs()
 
-    # print("\n--------")
-    # print("Testing symnmf extension directly")
-    # print("--------")
-    # symnmflib_sucesses = 0
-    # for trial in range(1, TRIALS_SYMNMF_LIB + 1):
-    #     print(f"trial {trial}/{TRIALS_PROGRAMS}")
-    #     if test_symnmf_lib():
-    #         symnmflib_sucesses += 1
+    print("\n--------")
+    print("Testing symnmf extension directly")
+    print("--------")
+    symnmflib_sucesses = 0
+    for trial in range(1, TRIALS_SYMNMF_LIB + 1):
+        print(f"trial {trial}/{TRIALS_PROGRAMS}")
+        if test_symnmf_lib():
+            symnmflib_sucesses += 1
 
-    # if symnmflib_sucesses == TRIALS_SYMNMF_LIB:
-    #     print_green("success")
-    # elif symnmflib_sucesses > 0:
-    #     print_red(
-    #         f"failure: succeeded in {symnmflib_sucesses} out of {TRIALS_SYMNMF_LIB} trials"
-    #     )
-    # else:
-    #     print_red("failure: no trial succeeded")
+    if symnmflib_sucesses == TRIALS_SYMNMF_LIB:
+        print_green("success")
+    elif symnmflib_sucesses > 0:
+        print_red(
+            f"failure: succeeded in {symnmflib_sucesses} out of {TRIALS_SYMNMF_LIB} trials"
+        )
+    else:
+        print_red("failure: no trial succeeded")
 
-    # print("\n--------")
-    # print("Testing with valgrind")
-    # print("--------")
-    # test_with_valgrind()
+    print("\n--------")
+    print("Testing with valgrind")
+    print("--------")
+    test_with_valgrind()
 
     print("\n--------")
     print("Testing analysis.py (format only)")
