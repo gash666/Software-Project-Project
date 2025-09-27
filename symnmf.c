@@ -224,11 +224,13 @@ void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
 double** symnmf_c(double** H_0, double** W, int n, int k) {
     double** H_t;
     double** H_t1;
+    double** delta;
     int i, j;
     int iter;
 
     H_t = malloc_matrix(n, k);
     H_t1 = malloc_matrix(n, k);
+    delta = malloc_matrix(n, k);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < k; j++) {
@@ -241,11 +243,11 @@ double** symnmf_c(double** H_0, double** W, int n, int k) {
         
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
-                H_t1[i][j] -= H_t[i][j];
+                delta[i][j] = H_t1[i][j] - H_t[i][j];
             }
         }
 
-        if (pow(frobenius_norm(H_t1, n, k), 2) < EPSILON) {
+        if (frobenius_norm(delta, n, k) < EPSILON) {
             break;
         }
 
@@ -257,6 +259,7 @@ double** symnmf_c(double** H_0, double** W, int n, int k) {
     }
 
     free_matrix(H_t1, n);
+    free_matrix(delta, n);
 
     return H_t;
 }
