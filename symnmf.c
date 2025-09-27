@@ -195,19 +195,19 @@ double** norm_c(double** X, int n, int d) {
 void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
     double** WH;
     double** HT;
-    double** HHT;
+    double** HTH;
     double** HHTH;
     int i, j;
 
     WH = matrix_multiplication(W, H_t, n, n, k);
     HT = transpose(H_t, n, k);
-    HHT = matrix_multiplication(H_t, HT, n, k, n);
-    HHTH = matrix_multiplication(HHT, H_t, n, n, k);
+    HTH = matrix_multiplication(HT, H_t, k, n, k);
+    HHTH = matrix_multiplication(H_t, HTH, n, k, k);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < k; j++) {
             if (HHTH[i][j] == 0) {
-                HHTH[i][j] = DENOMINATOR_EPSILON;
+                HHTH[i][j] += DENOMINATOR_EPSILON;
             }
 
             H_t1[i][j] = H_t[i][j] * (1 - BETA + (BETA * (WH[i][j] / HHTH[i][j])));
@@ -216,7 +216,7 @@ void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
 
     free_matrix(WH, n);
     free_matrix(HT, k);
-    free_matrix(HHT, n);
+    free_matrix(HTH, k);
     free_matrix(HHTH, n);
 }
 
