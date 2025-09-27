@@ -1,6 +1,8 @@
 from symnmf import proccess_input_file, init_H
+import symnmf_module
 from sklearn.metrics import silhouette_score
 import numpy as np
+import sys
 
 EPSILON = 1e-4
 MAX_ITER = 300
@@ -9,11 +11,11 @@ np.random.seed(1234)
 
 
 def symnmf(k, X):
-    W = symnmf_mpdule.norm(X)
-    H = init_H(W, k)
-    result = symnmf_module.symnmf(H, W)
+	W = symnmf_module.norm(X)
+	H = init_H(W, k)
+	result = symnmf_module.symnmf(H, W)
 
-    return result
+	return result
 
 
 def get_distance(list1, list2):
@@ -21,20 +23,11 @@ def get_distance(list1, list2):
 	return sum([(list1[i] - list2[i]) ** 2 for i in range(len(list1))]) ** 0.5
 
 
-def is_good(number):
-	# Returns true if the string input represents a whole number
-	try:
-		num = float(number)
-		return num.is_integer()
-	except ValueError:
-		return False
-
-
 def kmeans(k, X):
-    n = len(X)
-    d = len(X[0])
+	n = len(X)
+	d = len(X[0])
 
-    # Initialize the centroids and structures / variables to support the algorithm
+	# Initialize the centroids and structures / variables to support the algorithm
 	centroids = [X[i].copy() for i in range(k)]
 	value_to_centroid = {}
 	nodes_in_centroid = [0 for i in range(k)]
@@ -64,55 +57,58 @@ def kmeans(k, X):
 
 		# Divide by the number of data points in each centroid
 		for i in range(k):
-			centroids[i] = [j / nodes_in_centroid[i] for j in centroids[i]]
+			if nodes_in_centroid[i] != 0:
+				centroids[i] = [j / nodes_in_centroid[i] for j in centroids[i]]
+			else:
+				centroids[i] = old_centroids[i]
 
 		# Get the max change
 		max_change = max([get_distance(old_centroids[i], centroids[i]) for i in range(k)])
 		count += 1
-    
-    return centroids
+
+	return centroids
 
 
 def labels_from_symnmf(results):
-    labels = []
+	labels = []
 
-    for row in results:
-        labels.append(row.index(max(row)))
-    
-    return labels
+	for row in results:
+		labels.append(row.index(max(row)))
+
+	return labels
 
 
 def labels_from_kmeans(X, results):
-    labels = []
+	labels = []
 
-    for point in X:
-        distances = [distance(point, cluster) for cluster in results]
-        labels.append(distances.index(min(distances)))
-    
-    return labels
+	for point in X:
+		distances = [get_distance(point, cluster) for cluster in results]
+		labels.append(distances.index(min(distances)))
+
+	return labels
 
 
 def main():
-    if len(sys.argv) != 3:
-        print("Usage: python symnmf.py <k> <file_name>")
-        sys.exit(1)
-    
-    k = int(float(sys.argv[1]))
-    file_name = sys.argv[2]
+	if len(sys.argv) != 3:
+		print("Usage: python symnmf.py <k> <file_name>")
+		sys.exit(1)
 
-    X = proccess_input_file(file_name)
+	k = int(float(sys.argv[1]))
+	file_name = sys.argv[2]
 
-    symnmf_results = symnmf(k, X)
-    kmeans_results = kmeans(k, X)
+	X = proccess_input_file(file_name)
 
-    symnmf_labels = labels_from_symnmf(X, symnmf_restuls)
-    kmeans_labels = labels_from_kmeans(X, kmeans_restuls)
+	symnmf_results = symnmf(k, X)
+	kmeans_results = kmeans(k, X)
 
-    symnmf_score = silhouette_score(X, symnmf_labels)
-    kmeans_score = silhouette_score(X, kmeans_labels)
+	symnmf_labels = labels_from_symnmf(symnmf_results)
+	kmeans_labels = labels_from_kmeans(X, kmeans_results)
 
-    print(f"nmf: {symnmf_score:.4f}")
-    print(f"kmeans: {kmeans_score:.4f}")
+	symnmf_score = silhouette_score(X, symnmf_labels)
+	kmeans_score = silhouette_score(X, kmeans_labels)
+
+	print(f"nmf: {symnmf_score:.4f}")
+	print(f"kmeans: {kmeans_score:.4f}")
 
 
 if __name__ == '__main__':

@@ -110,6 +110,7 @@ double frobenius_norm(double** A, int n, int m) {
     return result;
 }
 
+void print_matrix(double** A, int n, int m);
 
 double** sym_c(double** X, int n, int d) {
     double** A;

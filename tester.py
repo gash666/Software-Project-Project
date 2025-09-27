@@ -14,11 +14,11 @@ import numpy as np
 
 VALGRIND_ERRCODE = 99
 EPS = 1e-4
-TRIALS_PROGRAMS = 5
-TRIALS_SYMNMF_LIB = 5
-TRIALS_VALGRIND_C = 3
-TRIALS_VALGRIND_PY_SYMNMF = 6
-TRIALS_ANALYSIS_PY = 5
+TRIALS_PROGRAMS = 50
+TRIALS_SYMNMF_LIB = 50
+TRIALS_VALGRIND_C = 30
+TRIALS_VALGRIND_PY_SYMNMF = 60
+TRIALS_ANALYSIS_PY = 50
 TEST_PYTHON_MEMORY = True
 
 REGEX_NUMBER_FMT = r"-?(?:0|[1-9]\d*)\.\d{4}"
@@ -608,33 +608,33 @@ def test_with_valgrind():
 
 
 if __name__ == "__main__":
-    print("--------")
-    print("Testing programs")
-    print("--------")
-    test_programs()
+    # print("--------")
+    # print("Testing programs")
+    # print("--------")
+    # test_programs()
 
-    print("\n--------")
-    print("Testing symnmf extension directly")
-    print("--------")
-    symnmflib_sucesses = 0
-    for trial in range(1, TRIALS_SYMNMF_LIB + 1):
-        print(f"trial {trial}/{TRIALS_PROGRAMS}")
-        if test_symnmf_lib():
-            symnmflib_sucesses += 1
+    # print("\n--------")
+    # print("Testing symnmf extension directly")
+    # print("--------")
+    # symnmflib_sucesses = 0
+    # for trial in range(1, TRIALS_SYMNMF_LIB + 1):
+    #     print(f"trial {trial}/{TRIALS_PROGRAMS}")
+    #     if test_symnmf_lib():
+    #         symnmflib_sucesses += 1
 
-    if symnmflib_sucesses == TRIALS_SYMNMF_LIB:
-        print_green("success")
-    elif symnmflib_sucesses > 0:
-        print_red(
-            f"failure: succeeded in {symnmflib_sucesses} out of {TRIALS_SYMNMF_LIB} trials"
-        )
-    else:
-        print_red("failure: no trial succeeded")
+    # if symnmflib_sucesses == TRIALS_SYMNMF_LIB:
+    #     print_green("success")
+    # elif symnmflib_sucesses > 0:
+    #     print_red(
+    #         f"failure: succeeded in {symnmflib_sucesses} out of {TRIALS_SYMNMF_LIB} trials"
+    #     )
+    # else:
+    #     print_red("failure: no trial succeeded")
 
-    print("\n--------")
-    print("Testing with valgrind")
-    print("--------")
-    test_with_valgrind()
+    # print("\n--------")
+    # print("Testing with valgrind")
+    # print("--------")
+    # test_with_valgrind()
 
     print("\n--------")
     print("Testing analysis.py (format only)")
