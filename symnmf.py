@@ -1,5 +1,5 @@
 import sys
-import symnmf_c
+import symnmf_module
 import numpy as np
 import math
 
@@ -40,11 +40,10 @@ def proccess_input_file(file_name):
     X = []
 
     for line in lines:
-        row = [float(value) for value in line.split(",")]
-        
-        if len(row) == 0:
+        if line == "\n":
             break
         
+        row = [float(value) for value in line[:-1].split(",")]
         X.append(row)
     
     return X
@@ -68,15 +67,15 @@ def main():
     result = None
 
     if goal == "symnmf":
-        W = symnmf_c.norm(X)
+        W = symnmf_module.norm(X)
         H = generate_initial_H(W, k)
-        result = symnmf_c.symnmf(H, W)
+        result = symnmf_module.symnmf(H, W)
     elif goal == "sym":
-        result = symnmf_c.sym(X)
+        result = symnmf_module.sym(X)
     elif goal == "ddg":
-        result = symnmf_c.ddg(X)
+        result = symnmf_module.ddg(X)
     elif goal == "norm":
-        result = symnmf_c.norm(X)
+        result = symnmf_module.norm(X)
     else:
         print("An Error Has Occurred")
         sys.exit(1)

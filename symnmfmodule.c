@@ -6,37 +6,44 @@
 #include "symnmf.h"
 
 
-static double** build_matrix_from_lists(PyObject *args, int *n, int *m) {
-    PyObject* lst;
+static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
     PyObject* item_lst;
     PyObject* item;
+    PyObject* index;
     double** A;
     int i, j;
 
-    if (!PyArg_ParseTuple(args, "O", lst)) {
-        return NULL;
-    }
-
     *n = PyObject_Length(lst);
-
+    
     A = (double**)malloc(*n * sizeof(double*));
     if (A == NULL) {
-        return NULL;
+        printf("An Error Has Occurred6\n");
+        exit(1);
     }
-
+    
     for (i = 0; i < *n; i++) {
-        item_lst = PyObject_GetItem(lst, i);
+        index = PyLong_FromLong(i);
+        item_lst = PyObject_GetItem(lst, index);
         *m = PyObject_Length(item_lst);
+        
+        Py_DECREF(index);
         
         A[i] = (double*)malloc(*m * sizeof(double));
         if (A[i] == NULL) {
-            return NULL;
+            printf("An Error Has Occurred5\n");
+            exit(1);
         }
-
+        
         for (j = 0; j < *m; j++) {
-            item = PyObject_GetItem(item_lst, j);
+            index = PyLong_FromLong(j);
+            item = PyObject_GetItem(item_lst, index);
             A[i][j] = PyFloat_AsDouble(item);
+            
+            Py_DECREF(item);
+            Py_DECREF(index);
         }
+        
+        Py_DECREF(item_lst);
     }
 
     return A;
@@ -68,10 +75,17 @@ static PyObject* build_lists_from_matrix(double** A, int n, int m) {
 
 static PyObject* sym(PyObject *self, PyObject *args) {
     double** X;
+    PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
-    X = build_matrix_from_lists(args, &n, &d);
+    if (!PyArg_ParseTuple(args, "O", &X_lst)) {
+        printf("An Error Has Occurred7\n");
+        exit(1);
+    }
+
+    X = build_matrix_from_lists(X_lst, &n, &d);
+    Py_DECREF(X_lst);
 
     double** result = sym_c(X, n, d);
 
@@ -86,10 +100,17 @@ static PyObject* sym(PyObject *self, PyObject *args) {
 
 static PyObject* ddg(PyObject *self, PyObject *args) {
     double** X;
+    PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
-    X = build_matrix_from_lists(args, &n, &d);
+    if (!PyArg_ParseTuple(args, "O", &X_lst)) {
+        printf("An Error Has Occurred7\n");
+        exit(1);
+    }
+
+    X = build_matrix_from_lists(X_lst, &n, &d);
+    Py_DECREF(X_lst);
 
     double** result = ddg_c(X, n, d);
 
@@ -104,10 +125,17 @@ static PyObject* ddg(PyObject *self, PyObject *args) {
 
 static PyObject* norm(PyObject *self, PyObject *args) {
     double** X;
+    PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
-    X = build_matrix_from_lists(args, &n, &d);
+    if (!PyArg_ParseTuple(args, "O", &X_lst)) {
+        printf("An Error Has Occurred7\n");
+        exit(1);
+    }
+
+    X = build_matrix_from_lists(X_lst, &n, &d);
+    Py_DECREF(X_lst);
 
     double** result = norm_c(X, n, d);
 
@@ -123,16 +151,27 @@ static PyObject* norm(PyObject *self, PyObject *args) {
 static PyObject* symnmf(PyObject *self, PyObject *args) {
     double** H_0;
     double** W;
+    double** result;
+    PyObject* H_0_lst;
+    PyObject* W_lst;
     PyObject* lists;
     int n, k;
 
-    H_0 = build_matrix_from_lists(args, &n, &k);
-    W = build_matrix_from_lists(args, &n, &n);
+    if (!PyArg_ParseTuple(args, "OO", &H_0_lst, &W_lst)) {
+        printf("An Error Has Occurred7\n");
+        exit(1);
+    }
 
-    double** result = symnmf_c(H_0, W, n, k);
-
+    H_0 = build_matrix_from_lists(H_0_lst, &n, &k);
+    W = build_matrix_from_lists(W_lst, &n, &n);
+    
+    result = symnmf_c(H_0, W, n, k);
+    
     lists = build_lists_from_matrix(result, n, k);
-
+    
+    Py_DECREF(W_lst);
+    Py_DECREF(H_0_lst);
+    
     free_matrix(H_0, n);
     free_matrix(W, n);
     free_matrix(result, n);
@@ -164,14 +203,14 @@ static PyMethodDef symnmfMethods[] = {
 
 static struct PyModuleDef symnmfmodule = {
     PyModuleDef_HEAD_INIT,
-    "symnmf_c",
+    "symnmf_module",
     NULL,
     -1,
     symnmfMethods
 };
 
 
-PyMODINIT_FUCN PyInit_symnmf_c(void) {
+PyMODINIT_FUNC PyInit_symnmf_module(void) {
     PyObject *m;
     m = PyModule_Create(&symnmfmodule);
     if (!m) {

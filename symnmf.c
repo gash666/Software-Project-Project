@@ -6,19 +6,27 @@
 #include "symnmf.h"
 
 
+const double EPSILON = 1e-4;
+const int MAX_ITER = 1;
+const double DENOMINATOR_EPSILON = 1e-6;
+const double BETA = 0.5;
+
+
 double** malloc_matrix(int n, int m) {
     double** A;
     int i;
 
     A = (double**)malloc(n * sizeof(double*));
     if (A == NULL) {
-        printf("An Error Has Occurred");
+        printf("An Error Has Occurred1");
+        exit(1);
     }
 
     for (i = 0; i < n; i++) {
         A[i] = (double*)malloc(m * sizeof(double));
         if (A[i] == NULL) {
-            printf("An Error Has Occurred");
+            printf("An Error Has Occurred2");
+            exit(1);
         }
     }
 
@@ -163,7 +171,7 @@ double** norm_c(double** X, int n, int d) {
     double denominator;
 
     A = sym_c(X, n, d);
-    D = sym_c(X, n, d);
+    D = ddg_c(X, n, d);
     W = malloc_matrix(n, n);
 
     for (i = 0; i < n; i++) {
@@ -246,8 +254,10 @@ double** symnmf_c(double** H_0, double** W, int n, int k) {
             break;
         }
 
-        for (j = 0; j < k; j++) {
-            H_t[i][j] = H_t1[i][j];
+        for (i = 0; i < n; i++) {
+            for (j = 0; j < k; j++) {
+                H_t[i][j] = H_t1[i][j];
+            }
         }
     }
 
@@ -267,11 +277,12 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
     file = fopen(file_name, "r");
 
     if (file == NULL) {
-        printf("An Error Has Occurred");
+        printf("An Error Has Occurred3");
+        exit(1);
     }
 
     *n = 0;
-    *d = 1;
+    *d = 0;
 
     while ((c = fgetc(file)) != EOF) {
         if (c == ',') {
@@ -284,6 +295,7 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
 
     (*n)--;
     *d /= *n;
+    (*d)++;
 
     fseek(file, 0, SEEK_SET);
 
@@ -291,7 +303,11 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
 
     for (i = 0; i < *n; i++) {
         for (j = 0; j < *d; j++) {
-            fscanf(file, "%lf", &value);
+            if (fscanf(file, "%lf", &value) != 0) {
+                printf("An Error Has Occurred\n");
+                exit(1);
+            }
+
             A[i][j] = value;
             
             /* skip commas */
@@ -341,7 +357,6 @@ int main(int argc, char* argv[]) {
     file_name = argv[2];
     
     X = proccess_input_file(file_name, &n, &d);
-    printf("%d %d \n", n, d);
 
     if (strcmp(goal, "sym") == 0) {
         result = sym_c(X, n, d);
@@ -353,8 +368,8 @@ int main(int argc, char* argv[]) {
         result = norm_c(X, n, d);
     }
     else {
-        printf("An Error Has Occurred");
-        return 1;
+        printf("An Error Has Occurred\n");
+        exit(1);
     }
 
     print_matrix(result, n, n);
