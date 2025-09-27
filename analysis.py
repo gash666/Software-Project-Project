@@ -1,4 +1,4 @@
-from symnmf import proccess_input_file, generate_initial_H
+from symnmf import proccess_input_file, init_H
 from sklearn.metrics import silhouette_score
 import numpy as np
 
@@ -10,7 +10,7 @@ np.random.seed(1234)
 
 def symnmf(k, X):
     W = symnmf_mpdule.norm(X)
-    H = generate_initial_H(W, k)
+    H = init_H(W, k)
     result = symnmf_module.symnmf(H, W)
 
     return result

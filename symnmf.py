@@ -6,7 +6,7 @@ import math
 np.random.seed(1234)
 
 
-def generate_initial_H(W, k):
+def init_H(W, k):
     n = len(W)
     
     m = 0
@@ -15,15 +15,11 @@ def generate_initial_H(W, k):
             m += value
     m /= n * k
 
-    H = []
+    H = np.zeros((n, k), dtype=float)
 
     for i in range(n):
-        row = []
-
         for j in range(k):
-            row.append(np.random.uniform(0, 2 * math.sqrt(m / k)))
-        
-        H.append(row)
+            H[i, j] = np.random.uniform(0, 2 * math.sqrt(m / k))
     
     return H
 
@@ -68,7 +64,7 @@ def main():
 
     if goal == "symnmf":
         W = symnmf_module.norm(X)
-        H = generate_initial_H(W, k)
+        H = init_H(W, k)
         result = symnmf_module.symnmf(H, W)
     elif goal == "sym":
         result = symnmf_module.sym(X)
