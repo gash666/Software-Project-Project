@@ -85,7 +85,6 @@ static PyObject* sym(PyObject *self, PyObject *args) {
     }
 
     X = build_matrix_from_lists(X_lst, &n, &d);
-    Py_DECREF(X_lst);
 
     double** result = sym_c(X, n, d);
 
@@ -110,7 +109,6 @@ static PyObject* ddg(PyObject *self, PyObject *args) {
     }
 
     X = build_matrix_from_lists(X_lst, &n, &d);
-    Py_DECREF(X_lst);
 
     double** result = ddg_c(X, n, d);
 
@@ -135,7 +133,6 @@ static PyObject* norm(PyObject *self, PyObject *args) {
     }
 
     X = build_matrix_from_lists(X_lst, &n, &d);
-    Py_DECREF(X_lst);
 
     double** result = norm_c(X, n, d);
 
@@ -168,9 +165,6 @@ static PyObject* symnmf(PyObject *self, PyObject *args) {
     result = symnmf_c(H_0, W, n, k);
     
     lists = build_lists_from_matrix(result, n, k);
-    
-    Py_DECREF(W_lst);
-    Py_DECREF(H_0_lst);
     
     free_matrix(H_0, n);
     free_matrix(W, n);

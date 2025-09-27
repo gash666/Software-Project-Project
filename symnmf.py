@@ -13,7 +13,7 @@ def init_H(W, k):
     for row in W:
         for value in row:
             m += value
-    m /= n * k
+    m /= n * n
 
     H = np.zeros((n, k), dtype=float)
 

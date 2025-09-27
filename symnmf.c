@@ -199,11 +199,6 @@ void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
     double** HHTH;
     int i, j;
 
-    WH = malloc_matrix(n, k);
-    HT = malloc_matrix(k, n);
-    HHT = malloc_matrix(n, n);
-    HHTH = malloc_matrix(n, k);
-
     WH = matrix_multiplication(W, H_t, n, n, k);
     HT = transpose(H_t, n, k);
     HHT = matrix_multiplication(H_t, HT, n, k, n);
