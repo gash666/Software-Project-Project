@@ -17,7 +17,7 @@ static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
     
     A = (double**)malloc(*n * sizeof(double*));
     if (A == NULL) {
-        printf("An Error Has Occurred6\n");
+        printf("An Error Has Occurred8\n");
         exit(1);
     }
     
@@ -30,7 +30,7 @@ static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
         
         A[i] = (double*)malloc(*m * sizeof(double));
         if (A[i] == NULL) {
-            printf("An Error Has Occurred5\n");
+            printf("An Error Has Occurred9\n");
             exit(1);
         }
         
@@ -80,7 +80,7 @@ static PyObject* sym(PyObject *self, PyObject *args) {
     int n, d;
 
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred7\n");
+        printf("An Error Has Occurred10\n");
         exit(1);
     }
 
@@ -105,7 +105,7 @@ static PyObject* ddg(PyObject *self, PyObject *args) {
     int n, d;
 
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred7\n");
+        printf("An Error Has Occurred11\n");
         exit(1);
     }
 
@@ -130,7 +130,7 @@ static PyObject* norm(PyObject *self, PyObject *args) {
     int n, d;
 
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred7\n");
+        printf("An Error Has Occurred12\n");
         exit(1);
     }
 
@@ -158,7 +158,7 @@ static PyObject* symnmf(PyObject *self, PyObject *args) {
     int n, k;
 
     if (!PyArg_ParseTuple(args, "OO", &H_0_lst, &W_lst)) {
-        printf("An Error Has Occurred7\n");
+        printf("An Error Has Occurred13\n");
         exit(1);
     }
 

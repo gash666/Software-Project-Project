@@ -28,7 +28,7 @@ def proccess_input_file(file_name):
     try:
         f = open(file_name, "r")
     except:
-        print("An Error Has Occurred")
+        print("An Error Has Occurred6")
         sys.exit(1)
     
     lines = f.readlines()
@@ -73,7 +73,7 @@ def main():
     elif goal == "norm":
         result = symnmf_module.norm(X)
     else:
-        print("An Error Has Occurred")
+        print("An Error Has Occurred7")
         sys.exit(1)
 
     print_matrix(result)

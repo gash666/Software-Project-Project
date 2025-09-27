@@ -7,7 +7,7 @@
 
 
 const double EPSILON = 1e-4;
-const int MAX_ITER = 1;
+const int MAX_ITER = 300;
 const double DENOMINATOR_EPSILON = 1e-6;
 const double BETA = 0.5;
 
@@ -18,14 +18,14 @@ double** malloc_matrix(int n, int m) {
 
     A = (double**)malloc(n * sizeof(double*));
     if (A == NULL) {
-        printf("An Error Has Occurred1");
+        printf("An Error Has Occurred1\n");
         exit(1);
     }
 
     for (i = 0; i < n; i++) {
         A[i] = (double*)malloc(m * sizeof(double));
         if (A[i] == NULL) {
-            printf("An Error Has Occurred2");
+            printf("An Error Has Occurred2\n");
             exit(1);
         }
     }
@@ -277,13 +277,13 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
     file = fopen(file_name, "r");
 
     if (file == NULL) {
-        printf("An Error Has Occurred3");
+        printf("An Error Has Occurred3\n");
         exit(1);
     }
 
     *n = 0;
     *d = 0;
-
+    
     while ((c = fgetc(file)) != EOF) {
         if (c == ',') {
             (*d)++;
@@ -293,29 +293,25 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
         }
     }
 
-    (*n)--;
     *d /= *n;
     (*d)++;
 
     fseek(file, 0, SEEK_SET);
 
     A = malloc_matrix(*n, *d);
-
+        
     for (i = 0; i < *n; i++) {
         for (j = 0; j < *d; j++) {
-            if (fscanf(file, "%lf", &value) != 0) {
-                printf("An Error Has Occurred\n");
+            if (fscanf(file, "%lf", &value) != 1) {
+                printf("An Error Has Occurred4\n");
                 exit(1);
             }
 
             A[i][j] = value;
             
-            /* skip commas */
+            /* skip commas and newlines */
             fgetc(file);
         }
-        
-        /* skip newlines */
-        fgetc(file);
     }
 
     fclose(file);
@@ -368,7 +364,7 @@ int main(int argc, char* argv[]) {
         result = norm_c(X, n, d);
     }
     else {
-        printf("An Error Has Occurred\n");
+        printf("An Error Has Occurred5\n");
         exit(1);
     }
 
