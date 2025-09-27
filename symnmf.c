@@ -247,14 +247,14 @@ double** symnmf_c(double** H_0, double** W, int n, int k) {
             }
         }
 
-        if (frobenius_norm(delta, n, k) < EPSILON) {
-            break;
-        }
-
         for (i = 0; i < n; i++) {
             for (j = 0; j < k; j++) {
                 H_t[i][j] = H_t1[i][j];
             }
+        }
+
+        if (frobenius_norm(delta, n, k) < EPSILON) {
+            break;
         }
     }
 
@@ -302,6 +302,7 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
         for (j = 0; j < *d; j++) {
             if (fscanf(file, "%lf", &value) != 1) {
                 printf("An Error Has Occurred4\n");
+                fclose(file);
                 exit(1);
             }
 
@@ -368,6 +369,7 @@ int main(int argc, char* argv[]) {
 
     print_matrix(result, n, n);
     free_matrix(result, n);
+    free_matrix(X, n);
     
     return 0;
 }
