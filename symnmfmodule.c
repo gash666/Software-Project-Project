@@ -7,50 +7,50 @@
 
 
 static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
+    /* Build a C matrix from a list passed from python */
     PyObject* item_lst;
     PyObject* item;
     PyObject* index;
     double** A;
     int i, j;
 
+    /* Get length of list */
     *n = PyObject_Length(lst);
-    
+    /* Allocate matrix rows */
     A = (double**)malloc(*n * sizeof(double*));
     if (A == NULL) {
-        printf("An Error Has Occurred8\n");
+        printf("An Error Has Occurred\n");
         exit(1);
     }
     
+    /* Load matrix values from lst */
     for (i = 0; i < *n; i++) {
         index = PyLong_FromLong(i);
         item_lst = PyObject_GetItem(lst, index);
+
+        /* Get length of row */
         *m = PyObject_Length(item_lst);
-        
-        Py_DECREF(index);
-        
+        /* Allocate row */
         A[i] = (double*)malloc(*m * sizeof(double));
         if (A[i] == NULL) {
-            printf("An Error Has Occurred9\n");
+            printf("An Error Has Occurred\n");
             exit(1);
         }
         
+        /* Load values from lst to row */
         for (j = 0; j < *m; j++) {
             index = PyLong_FromLong(j);
             item = PyObject_GetItem(item_lst, index);
+            /* Store value in matrix*/
             A[i][j] = PyFloat_AsDouble(item);
-            
-            Py_DECREF(item);
-            Py_DECREF(index);
         }
-        
-        Py_DECREF(item_lst);
     }
-
     return A;
 }
 
 
 static PyObject* build_lists_from_matrix(double** A, int n, int m) {
+    /* Build a lst to pass to python from C matrix of size n x m */
     PyObject* lists;
     PyObject* lst;
     PyObject* item;
@@ -58,9 +58,11 @@ static PyObject* build_lists_from_matrix(double** A, int n, int m) {
 
     lists = PyList_New(n);
 
+    /* For row of matrix */
     for (i = 0; i < n; i++) {
         lst = PyList_New(m);
 
+        /* For value of row */
         for (j = 0; j < m; j++) {
             item = Py_BuildValue("d", A[i][j]);
             PyList_SetItem(lst, j, item);
@@ -74,22 +76,28 @@ static PyObject* build_lists_from_matrix(double** A, int n, int m) {
 
 
 static PyObject* sym(PyObject *self, PyObject *args) {
+    /* C module function to call sym_c */
     double** X;
     PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
+    /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred10\n");
+        printf("An Error Has Occurred\n");
         exit(1);
     }
 
+    /* Make C matrix from python list */
     X = build_matrix_from_lists(X_lst, &n, &d);
 
+    /* Call sym_c function */
     double** result = sym_c(X, n, d);
 
+    /* Build python-passable list from result */
     lists = build_lists_from_matrix(result, n, n);
 
+    /* Free memory */
     free_matrix(X, n);
     free_matrix(result, n);
 
@@ -98,22 +106,28 @@ static PyObject* sym(PyObject *self, PyObject *args) {
 
 
 static PyObject* ddg(PyObject *self, PyObject *args) {
+    /* C module function to call ddg_c */
     double** X;
     PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
+    /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred11\n");
+        printf("An Error Has Occurred\n");
         exit(1);
     }
 
+    /* Make C matrix from python list */
     X = build_matrix_from_lists(X_lst, &n, &d);
 
+    /* Call ddg_c function */
     double** result = ddg_c(X, n, d);
 
+    /* Build python-passable list from result */
     lists = build_lists_from_matrix(result, n, n);
 
+    /* Free memory */
     free_matrix(X, n);
     free_matrix(result, n);
 
@@ -122,22 +136,28 @@ static PyObject* ddg(PyObject *self, PyObject *args) {
 
 
 static PyObject* norm(PyObject *self, PyObject *args) {
+    /* C module function to call norm_c */
     double** X;
     PyObject* X_lst;
     PyObject* lists;
     int n, d;
 
+    /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred12\n");
+        printf("An Error Has Occurred\n");
         exit(1);
     }
 
+    /* Make C matrix from python list */
     X = build_matrix_from_lists(X_lst, &n, &d);
 
+    /* Call norm_c function */
     double** result = norm_c(X, n, d);
 
+    /* Build python-passable list from result */
     lists = build_lists_from_matrix(result, n, n);
 
+    /* Free memory */
     free_matrix(X, n);
     free_matrix(result, n);
 
@@ -146,6 +166,7 @@ static PyObject* norm(PyObject *self, PyObject *args) {
 
 
 static PyObject* symnmf(PyObject *self, PyObject *args) {
+    /* C module function to call symnmf_c */
     double** H_0;
     double** W;
     double** result;
@@ -154,18 +175,23 @@ static PyObject* symnmf(PyObject *self, PyObject *args) {
     PyObject* lists;
     int n, k;
 
+    /* Get two 2D lists from python */
     if (!PyArg_ParseTuple(args, "OO", &H_0_lst, &W_lst)) {
-        printf("An Error Has Occurred13\n");
+        printf("An Error Has Occurred\n");
         exit(1);
     }
 
+    /* Make C matrices from python lists */
     H_0 = build_matrix_from_lists(H_0_lst, &n, &k);
     W = build_matrix_from_lists(W_lst, &n, &n);
     
+    /* Call symnmf_c function */
     result = symnmf_c(H_0, W, n, k);
     
+    /* Build python-passable list from result */
     lists = build_lists_from_matrix(result, n, k);
     
+    /* Free memory */
     free_matrix(H_0, n);
     free_matrix(W, n);
     free_matrix(result, n);
@@ -178,19 +204,19 @@ static PyMethodDef symnmfMethods[] = {
     {"sym",
         (PyCFunction)sym,
         METH_VARARGS,
-        PyDoc_STR("sym")},
+        PyDoc_STR("C module function to call sym_c")},
     {"ddg",
         (PyCFunction)ddg,
         METH_VARARGS,
-        PyDoc_STR("ddg")},
+        PyDoc_STR("C module function to call ddg_c")},
     {"norm",
         (PyCFunction)norm,
         METH_VARARGS,
-        PyDoc_STR("norm")},
+        PyDoc_STR("C module function to call norm_c")},
     {"symnmf",
         (PyCFunction)symnmf,
         METH_VARARGS,
-        PyDoc_STR("symnmf")},
+        PyDoc_STR("C module function to call symnmf_c")},
     {NULL, NULL, 0, NULL}
 };
 

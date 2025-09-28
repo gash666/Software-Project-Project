@@ -7,7 +7,12 @@ np.random.seed(1234)
 
 
 def init_H(W, k):
-    # Initialize length variable
+    """
+    Initialize a random matrix H, of size n x k
+    W: normalized similarity matrix
+    k: number of clusters
+    return: H
+    """
     n = len(W)
 
     # Calculate average entry of W
@@ -27,11 +32,16 @@ def init_H(W, k):
 
 
 def proccess_input_file(file_name):
+    """
+    Proccess and input file
+    file_name: file to load input from
+    return: X, matrix read from file
+    """
     # Open the file and check for errors
     try:
         f = open(file_name, "r")
     except:
-        print("An Error Has Occurred6")
+        print("An Error Has Occurred")
         sys.exit(1)
 
     # Read from the file
@@ -54,7 +64,10 @@ def proccess_input_file(file_name):
 
 
 def print_matrix(A):
-    # Print the matrix line by line
+    """
+    Print matrix A
+    A: matrix to print
+    """
     for row in A:
         print(",".join([f"{value:.4f}" for value in row]))
 
@@ -65,11 +78,12 @@ def main():
         print("Usage: python symnmf.py <k> <goal> <file_name>")
         sys.exit(1)
 
-    # Initialize variables
+    # Load variables from args
     k = int(float(sys.argv[1]))
     goal = sys.argv[2]
     file_name = sys.argv[3]
 
+    # Get matrix from file
     X = proccess_input_file(file_name)
     result = None
 
@@ -83,14 +97,14 @@ def main():
         # Calculate the similarity matrix A
         result = symnmf_module.sym(X)
     elif goal == "ddg":
-        # Calculate the diagonal matrix D
+        # Calculate the diagonal degree matrix D
         result = symnmf_module.ddg(X)
     elif goal == "norm":
         # Calculate the normalized similarity matrix W
         result = symnmf_module.norm(X)
     else:
         # Print error message and exit
-        print("An Error Has Occurred7")
+        print("An Error Has Occurred")
         sys.exit(1)
 
     # Print the result
