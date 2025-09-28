@@ -107,9 +107,9 @@ def main():
             # Print error message and exit
             print("An Error Has Occurred")
             sys.exit(1)
-    except RunRuntimeError as e:
-		print(e)
-		sys.exit(1)
+    except RuntimeError as e:
+        print(e)
+        sys.exit(1)
 
     # Print the result
     print_matrix(result)

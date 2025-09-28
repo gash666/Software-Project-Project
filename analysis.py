@@ -34,11 +34,13 @@ def get_distance(list1, list2):
 	return sum([(list1[i] - list2[i]) ** 2 for i in range(len(list1))]) ** 0.5
 
 
-def kmeans_step(X, k, centroids, value_to_centroid, nodes_in_centroid):
+def kmeans_step(X, k, n, d, centroids, value_to_centroid, nodes_in_centroid):
 	"""
 	Perform a step in the kmeans algorithm
 	X: input matrix
 	k: number of clusters
+	n: number of points
+	d: size of points
 	centroids, value_to_centroid, nodes_in_centroid: kmeans lists
 	return: kmeans lists and max_change
 	"""
@@ -94,7 +96,7 @@ def kmeans(k, X):
 	# Run the algorithm
 	while count < MAX_ITER and max_change > EPSILON:
 		# Perform a step in the kmeans algorithm
-		centroids, value_to_centroid, nodes_in_centroid, max_change = kmeans_step(X, k, centroids, value_to_centroid, nodes_in_centroid)
+		centroids, value_to_centroid, nodes_in_centroid, max_change = kmeans_step(X, k, n, d, centroids, value_to_centroid, nodes_in_centroid)
 		count += 1
 
 	return centroids
@@ -109,7 +111,7 @@ def labels_from_symnmf(results):
 	labels = []
 
 	for row in results:
-		labels.append(row.index(max(row)))
+		labels.append(row.index(max(row)) + 1)
 
 	return labels
 
@@ -146,7 +148,7 @@ def main():
 	# Perform both algorithms
 	try:
 		symnmf_results = symnmf(k, X)
-	except RunRuntimeError as e:
+	except RuntimeError as e:
 		print(e)
 		sys.exit(1)
 	kmeans_results = kmeans(k, X)
