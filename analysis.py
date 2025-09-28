@@ -144,7 +144,11 @@ def main():
 	X = proccess_input_file(file_name)
 
 	# Perform both algorithms
-	symnmf_results = symnmf(k, X)
+	try:
+		symnmf_results = symnmf(k, X)
+	except RunRuntimeError as e:
+		print(e)
+		sys.exit(1)
 	kmeans_results = kmeans(k, X)
 
 	# Get labels from algorithm results

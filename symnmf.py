@@ -88,24 +88,28 @@ def main():
     result = None
 
     # Calculate the result based on the value of goal
-    if goal == "symnmf":
-        # Calculate symNMF and output the final result for H
-        W = symnmf_module.norm(X)
-        H = init_H(W, k)
-        result = symnmf_module.symnmf(H, W)
-    elif goal == "sym":
-        # Calculate the similarity matrix A
-        result = symnmf_module.sym(X)
-    elif goal == "ddg":
-        # Calculate the diagonal degree matrix D
-        result = symnmf_module.ddg(X)
-    elif goal == "norm":
-        # Calculate the normalized similarity matrix W
-        result = symnmf_module.norm(X)
-    else:
-        # Print error message and exit
-        print("An Error Has Occurred")
-        sys.exit(1)
+    try:
+        if goal == "symnmf":
+            # Calculate symNMF and output the final result for H
+            W = symnmf_module.norm(X)
+            H = init_H(W, k)
+            result = symnmf_module.symnmf(H, W)
+        elif goal == "sym":
+            # Calculate the similarity matrix A
+            result = symnmf_module.sym(X)
+        elif goal == "ddg":
+            # Calculate the diagonal degree matrix D
+            result = symnmf_module.ddg(X)
+        elif goal == "norm":
+            # Calculate the normalized similarity matrix W
+            result = symnmf_module.norm(X)
+        else:
+            # Print error message and exit
+            print("An Error Has Occurred")
+            sys.exit(1)
+    except RunRuntimeError as e:
+		print(e)
+		sys.exit(1)
 
     # Print the result
     print_matrix(result)

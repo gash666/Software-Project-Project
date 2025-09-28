@@ -19,8 +19,8 @@ static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
     /* Allocate matrix rows */
     A = (double**)malloc(*n * sizeof(double*));
     if (A == NULL) {
-        printf("An Error Has Occurred\n");
-        exit(1);
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
     }
     
     /* Load matrix values from lst */
@@ -33,8 +33,8 @@ static double** build_matrix_from_lists(PyObject *lst, int *n, int *m) {
         /* Allocate row */
         A[i] = (double*)malloc(*m * sizeof(double));
         if (A[i] == NULL) {
-            printf("An Error Has Occurred\n");
-            exit(1);
+            PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
         }
         
         /* Load values from lst to row */
@@ -84,8 +84,8 @@ static PyObject* sym(PyObject *self, PyObject *args) {
 
     /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred\n");
-        exit(1);
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
     }
 
     /* Make C matrix from python list */
@@ -114,8 +114,8 @@ static PyObject* ddg(PyObject *self, PyObject *args) {
 
     /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred\n");
-        exit(1);
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
     }
 
     /* Make C matrix from python list */
@@ -144,8 +144,8 @@ static PyObject* norm(PyObject *self, PyObject *args) {
 
     /* Get 2D list from python */
     if (!PyArg_ParseTuple(args, "O", &X_lst)) {
-        printf("An Error Has Occurred\n");
-        exit(1);
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
     }
 
     /* Make C matrix from python list */
@@ -177,8 +177,8 @@ static PyObject* symnmf(PyObject *self, PyObject *args) {
 
     /* Get two 2D lists from python */
     if (!PyArg_ParseTuple(args, "OO", &H_0_lst, &W_lst)) {
-        printf("An Error Has Occurred\n");
-        exit(1);
+        PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred");
+        return NULL;
     }
 
     /* Make C matrices from python lists */
