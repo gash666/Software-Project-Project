@@ -13,15 +13,19 @@ const double BETA = 0.5;
 
 
 double** malloc_matrix(int n, int m) {
+    /* allocate memory for a n * m matrix of doubles */
+    /* Declare variables */
     double** A;
     int i;
 
+    /* Allocate memory for an array of pointers to the cells and check for errors */
     A = (double**)malloc(n * sizeof(double*));
     if (A == NULL) {
         printf("An Error Has Occurred1\n");
         exit(1);
     }
 
+    /* Allocate the memory line by line */
     for (i = 0; i < n; i++) {
         A[i] = (double*)malloc(m * sizeof(double));
         if (A[i] == NULL) {
@@ -35,8 +39,11 @@ double** malloc_matrix(int n, int m) {
 
 
 void free_matrix(double** A, int n) {
+    /* Free all memory used by a matrix */
+    /* Declare loop variable */
     int i;
 
+    /* Go through every line and free its memory */
     for (i = 0; i < n; i++) {
         free(A[i]);
     }
@@ -46,11 +53,14 @@ void free_matrix(double** A, int n) {
 
 
 double** transpose(double** A, int n, int m) {
+    /* Declare variables */
     double** B;
     int i, j;
-    
+
+    /* Allocate memory for matrix */
     B = malloc_matrix(m, n);
 
+    /* Calculate the transpose of the given matrix */
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
             B[j][i] = A[i][j];
@@ -62,11 +72,14 @@ double** transpose(double** A, int n, int m) {
 
 
 double** matrix_multiplication(double** A, double** B, int n, int r, int m) {
+    /* Declare variables */
     double** C;
     int i, j, k;
 
+    /* Allocate memory for matrix */
     C = malloc_matrix(n, m);
 
+    /* Calculate matrix multiplication */
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
             C[i][j] = 0;
@@ -82,11 +95,14 @@ double** matrix_multiplication(double** A, double** B, int n, int r, int m) {
 
 
 double euclidean_distance(double* a, double* b, int d) {
+    /* Declare variables */
     double result;
     int i;
 
+    /* Initialize variable */
     result = 0;
 
+    /* Calculate distance between two data points */
     for (i = 0; i < d; i++) {
         result += pow((a[i] - b[i]), 2);
     }
@@ -96,11 +112,14 @@ double euclidean_distance(double* a, double* b, int d) {
 
 
 double frobenius_norm(double** A, int n, int m) {
+    /* Declare variables */
     double result;
     int i, j;
 
+    /* Initialize variable*/
     result = 0;
 
+    /* Calculate sum of squares of the cells of the given matrix */
     for (i = 0; i < n; i++) {
         for (j = 0; j < m; j++) {
             result += pow(A[i][j], 2);
@@ -113,17 +132,20 @@ double frobenius_norm(double** A, int n, int m) {
 void print_matrix(double** A, int n, int m);
 
 double** sym_c(double** X, int n, int d) {
+    /* Declare variables */
     double** A;
     int i, j;
 
+    /* Allocate memory for matrix */
     A = malloc_matrix(n, n);
 
+    /* Calculate the similarity matrix */
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
-            if (i == j) {
+            if (i == j) { /* 0 if on the center diagonal */
                 A[i][j] = 0;
             }
-            else {
+            else { /* Otherwise, calc similarity */
                 A[i][j] = exp(-(euclidean_distance(X[i], X[j], d))/2);
             }
         }
@@ -134,30 +156,38 @@ double** sym_c(double** X, int n, int d) {
 
 
 double** ddg_c(double** X, int n, int d) {
+    /* Declare variables */
     double** D;
     double** A;
     int i, j;
     double sum;
 
+    /* Calculate similarity matrix */
     A = sym_c(X, n, d);
+
+    /* Allocate memory for matrix */
     D = malloc_matrix(n, n);
 
+    /* Initialize matrix */
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             D[i][j] = 0;
         }
     }
 
+    /* Calculate the D matrix */
     for (i = 0; i < n; i++) {
+        /* Calculate the sum for each column */
         sum = 0;
-        
         for (j = 0; j < n; j++) {
             sum += A[i][j];
         }
 
+        /* Set the value on the diagonal to be the sum */
         D[i][i] = sum;
     }
 
+    /* Free the memory */
     free_matrix(A, n);
 
     return D;
@@ -165,27 +195,36 @@ double** ddg_c(double** X, int n, int d) {
 
 
 double** norm_c(double** X, int n, int d) {
+    /* Declare variables */
     double** W;
     double** D;
     double** A;
     int i, j;
     double denominator;
 
+    /* Calculate A and D matrices */
     A = sym_c(X, n, d);
     D = ddg_c(X, n, d);
+
+    /* Allocate memory for matrix */
     W = malloc_matrix(n, n);
 
+    /* Calculate W */
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
+            /* Calculate the denominator (D^-1/2 is diagonal so we get that this needs to be divided by to get
+            D ^ -1/2 * A * D ^ -1/2) */
             denominator = sqrt(D[i][i] * D[j][j]);
-            if (denominator == 0) {
+            if (denominator == 0) { /* cant divide by 0, make it epsilon */
                 denominator = DENOMINATOR_EPSILON;
             }
 
+            /* Calculate the value in W */
             W[i][j] = A[i][j] / denominator;
         }
     }
 
+    /* Free memory */
     free_matrix(A, n);
     free_matrix(D, n);
 
@@ -194,27 +233,35 @@ double** norm_c(double** X, int n, int d) {
 
 
 void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
+    /* Declare variables */
     double** WH;
     double** HT;
     double** HTH;
     double** HHTH;
     int i, j;
 
+    /* Calculate W * H */
     WH = matrix_multiplication(W, H_t, n, n, k);
+    /* Calculate H transposed (H^t)*/
     HT = transpose(H_t, n, k);
+    /* Calculate H^t * H */
     HTH = matrix_multiplication(HT, H_t, k, n, k);
+    /* Calculate H * H^t * H */
     HHTH = matrix_multiplication(H_t, HTH, n, k, k);
 
+    /* Calculate one step of symNMF */
     for (i = 0; i < n; i++) {
         for (j = 0; j < k; j++) {
-            if (HHTH[i][j] == 0) {
+            if (HHTH[i][j] == 0) { /* cant divide by 0, make it epsilon */
                 HHTH[i][j] += DENOMINATOR_EPSILON;
             }
 
+            /* Calculate the cell in new H */
             H_t1[i][j] = H_t[i][j] * (1 - BETA + (BETA * (WH[i][j] / HHTH[i][j])));
         }
     }
 
+    /* Free memory */
     free_matrix(WH, n);
     free_matrix(HT, k);
     free_matrix(HTH, k);
@@ -223,6 +270,7 @@ void symnmf_c_step(double** H_t, double** H_t1, double** W, int n, int k) {
 
 
 double** symnmf_c(double** H_0, double** W, int n, int k) {
+    /* Declare variables */
     double** H_t;
     double** H_t1;
     double** delta;
@@ -265,24 +313,21 @@ double** symnmf_c(double** H_0, double** W, int n, int k) {
     return H_t;
 }
 
-
-double** proccess_input_file(char* file_name, int* n, int* d) {
-    FILE* file;
+void calculate_dimensions(FILE* file, int* n, int* d) {
+    /* Declare variable */
     char c;
-    double** A;
-    double value;
-    int i, j;
-    
-    file = fopen(file_name, "r");
 
+    /* Check if file was opened correctly */
     if (file == NULL) {
         printf("An Error Has Occurred3\n");
         exit(1);
     }
 
+    /* Initialize dimensions */
     *n = 0;
     *d = 0;
-    
+
+    /* count the number of ',' and '\n' to calculate the dimensions from */
     while ((c = fgetc(file)) != EOF) {
         if (c == ',') {
             (*d)++;
@@ -292,11 +337,24 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
         }
     }
 
+    /* Calculate the number of elements in a line, the amount of ',' divided by the number of lines + 1*/
     *d /= *n;
     (*d)++;
+}
+
+
+double** proccess_input_file(char* file_name, int* n, int* d) {
+    /* Declare variables */
+    FILE* file;
+    double** A;
+    double value;
+    int i, j;
+    
+    file = fopen(file_name, "r");
+
+    calculate_dimensions(file, n, d);
 
     fseek(file, 0, SEEK_SET);
-
     A = malloc_matrix(*n, *d);
         
     for (i = 0; i < *n; i++) {
@@ -321,6 +379,7 @@ double** proccess_input_file(char* file_name, int* n, int* d) {
 
 
 void print_matrix(double** A, int n, int m) {
+    /* Declare variables */
     int i, j;
 
     for (i = 0; i < n; i++) {
@@ -338,6 +397,7 @@ void print_matrix(double** A, int n, int m) {
 
 
 int main(int argc, char* argv[]) {
+    /* Declare variables */
     char* goal;
     char* file_name;
     double** X;
